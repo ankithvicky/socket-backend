@@ -10,12 +10,11 @@ app.get('/', (req, res) => {
 
 // Sockets
 io.on('connection', (socket) => {
-    io.emit('connected');
-    socket.on('disconnect', () => {
-        io.emit('disconnected');
-    })
     socket.on('message', (data) => {
         io.emit('message_push', data);
+    });
+    socket.on('connected', (data) => {
+        io.emit('user-entered', data);
     });
 });
 

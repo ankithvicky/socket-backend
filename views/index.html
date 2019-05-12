@@ -51,7 +51,6 @@
     </style>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        let user = window.prompt('Enter the user name');
         var socket = io();
     </script>
 </head>
@@ -63,14 +62,15 @@
         <button type="button" onclick="formSubmit()">Send</button>
     </form>
     <script>
+        let user = window.prompt('Enter the user name');
+        if (user != null) {
+            socket.emit('connected', user);
+        }
+        socket.on('user-entered', (user) => {
+            appendMessage(null, `${user} is connected`);
+        });
         socket.on('message_push', (data) => {
             appendMessage(data.user, data.msg);
-        });
-        socket.on('connected', () => {
-            appendMessage(null, 'A user has been connected');
-        });
-        socket.on('disconnected', () => {
-            appendMessage(null, 'A user has been disconnected');
         });
 
         function formSubmit() {
