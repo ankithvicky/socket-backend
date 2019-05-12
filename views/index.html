@@ -1,0 +1,98 @@
+<html>
+
+<head>
+    <title>Socket IO chat applicationI </title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font: 13px Helvetica, Arial;
+        }
+
+        form {
+            background: #000;
+            padding: 3px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        form input {
+            border: 0;
+            padding: 10px;
+            width: 90%;
+            margin-right: .5%;
+        }
+
+        form button {
+            width: 9%;
+            background: rgb(130, 224, 255);
+            border: none;
+            padding: 10px;
+        }
+
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #messages li {
+            padding: 5px 10px;
+        }
+
+        #messages li:nth-child(odd) {
+            background: #eee;
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let user = window.prompt('Enter the user name');
+        var socket = io();
+    </script>
+</head>
+
+<body>
+    <ul id="messages"></ul>
+    <form action="">
+        <input id="message_area" autocomplete="off" />
+        <button type="button" onclick="formSubmit()">Send</button>
+    </form>
+    <script>
+        socket.on('message_push', (data) => {
+            appendMessage(data.user, data.msg);
+        });
+        socket.on('connected', () => {
+            appendMessage(null, 'A user has been connected');
+        });
+        socket.on('disconnected', () => {
+            appendMessage(null, 'A user has been disconnected');
+        });
+
+        function formSubmit() {
+            let msgElement = document.getElementById('message_area');
+            let msg = msgElement.value;
+            socket.emit('message', { msg, user });
+            msgElement.value = '';
+        }
+        function appendMessage(_user, _msg) {
+            var cls = 'text-align:left';
+            if (_user && _user == user)
+                cls = 'text-align:right';
+            var ul = document.getElementById("messages");
+            var li = document.createElement("li");
+            if (_user)
+                li.setAttribute('style', cls);
+            else
+                li.setAttribute('style', 'text-align:center');
+            li.appendChild(document.createTextNode(`${_user ? `${_user} - ` : ''}${_msg}`));
+            ul.appendChild(li);
+        }
+    </script>
+</body>
+
+</html>
